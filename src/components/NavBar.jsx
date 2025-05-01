@@ -28,7 +28,7 @@ const NavBar = () => {
     <div className="navbar bg-base-300">
       <div className="flex-1">
         <Link to="/" className="btn btn-ghost text-xl">
-          👩‍💻 DevMate
+          👩‍💻 CodeMate
         </Link>
       </div>
       {user && (
@@ -48,25 +48,34 @@ const NavBar = () => {
               tabIndex={0}
               className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow"
             >
-              <li>
-                <Link to="/profile" className="justify-between">
-                  Profile
-                  <span className="badge">New</span>
-                </Link>
-              </li>
-              <li>
-                <Link to="/connections">Connections</Link>
-              </li>
+              {!user ? (
+                <>
+                  <Link to="/login">Login</Link>
+                  <Link to="/signup">Signup</Link>
+                </>
+              ) : (
+                <>
+                  <li>
+                    <Link to="/profile" className="justify-between">
+                      Profile
+                      <span className="badge">New</span>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/connections">Connections</Link>
+                  </li>
 
-              <li>
-                <Link to="/requests">Requests</Link>
-              </li>
-              <li>
-                <Link to="/premium">Premium</Link>
-              </li>
-              <li>
-                <a onClick={handleLogout}>Logout</a>
-              </li>
+                  <li>
+                    <Link to="/requests">Requests</Link>
+                  </li>
+                  <li>
+                    <Link to="/premium">Premium</Link>
+                  </li>
+                  <li>
+                    <a onClick={handleLogout}>Logout</a>
+                  </li>
+                </>
+              )}
             </ul>
           </div>
         </div>

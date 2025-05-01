@@ -13,13 +13,13 @@ const Chat = () => {
   const userId = user?._id;
 
   const fetchChatMessages = async () => {
-    const chat = await axios.get(BASE_URL + "/chat/" + targetUserId, {
+    const chat = await axios.get(BASE_URL + "/user/chat/" + targetUserId, {
       withCredentials: true,
     });
 
-    console.log(chat.data.messages);
+    console.log(chat.data.data.messages);
 
-    const chatMessages = chat?.data?.messages.map((msg) => {
+    const chatMessages = chat?.data?.data?.messages.map((msg) => {
       const { senderId, text } = msg;
       return {
         firstName: senderId?.firstName,

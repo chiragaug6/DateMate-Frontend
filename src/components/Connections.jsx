@@ -14,8 +14,6 @@ const Connections = () => {
         withCredentials: true,
       });
 
-      console.log("res connection", res);
-
       dispatch(addConnections(res.data.data));
     } catch (err) {
       // Handle Error Case
