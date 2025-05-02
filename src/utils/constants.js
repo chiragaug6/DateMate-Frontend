@@ -1,4 +1,2 @@
 export const BASE_URL =
-  location.hostname === "localhost"
-    ? "http://localhost:3000"
-    : "https://codemate.tech/api";
+  location.hostname === "localhost" ? "http://localhost:3000" : "/api";
