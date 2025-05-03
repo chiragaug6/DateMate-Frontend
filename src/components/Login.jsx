@@ -4,6 +4,7 @@ import { useDispatch } from "react-redux";
 import { addUser } from "../utils/userSlice";
 import { useNavigate } from "react-router-dom";
 import { BASE_URL } from "../utils/constants";
+import { Turnstile } from "@marsidev/react-turnstile";
 
 const Login = () => {
   const [emailId, setEmailId] = useState("");
@@ -12,6 +13,7 @@ const Login = () => {
   const [lastName, setLastName] = useState("");
   const [isLoginForm, setIsLoginForm] = useState(true);
   const [error, setError] = useState("");
+  const [token, setToken] = useState("");
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -25,10 +27,19 @@ const Login = () => {
         },
         { withCredentials: true }
       );
-      dispatch(addUser(res.data.data));
-      return navigate("/");
+
+      if (res?.data?.success) {
+        dispatch(addUser(res.data.data));
+        return navigate("/profile");
+      } else {
+        setError(res?.data?.message);
+      }
     } catch (err) {
-      setError(err?.response?.data?.message || "Login Error at Server Side");
+      setError(
+        err?.response?.data?.message ||
+          err?.response?.data ||
+          "Login Error at Server Side"
+      );
     }
   };
 
@@ -36,11 +47,16 @@ const Login = () => {
     try {
       const res = await axios.post(
         BASE_URL + "/auth/signup",
-        { firstName, lastName, emailId, password },
+        { firstName, lastName, emailId, password, token },
         { withCredentials: true }
       );
-      dispatch(addUser(res.data.data));
-      return navigate("/profile");
+
+      if (res?.data?.success) {
+        dispatch(addUser(res.data.data));
+        return navigate("/profile");
+      } else {
+        setError(res?.data?.message);
+      }
     } catch (err) {
       setError(err?.response?.data?.message || "SignUp Error at Server Side");
     }
@@ -112,6 +128,17 @@ const Login = () => {
               {isLoginForm ? "Login" : "Sign Up"}
             </button>
           </div>
+
+          {!isLoginForm && (
+            <div>
+              <Turnstile
+                onSuccess={(token) => {
+                  setToken(token);
+                }}
+                siteKey="0x4AAAAAABZpW9tRFNhvG8EV"
+              />
+            </div>
+          )}
 
           <p
             className="m-auto cursor-pointer py-2"
