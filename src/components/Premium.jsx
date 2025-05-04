@@ -9,9 +9,12 @@ const Premium = () => {
   }, []);
 
   const verifyPremiumUser = async () => {
-    const res = await axios.get(BASE_URL + "/premium/verify", {
+    const res = await axios.get(BASE_URL + "/payment/verify", {
       withCredentials: true,
     });
+
+    console.log("verifyPremiumUser res");
+    console.log(res);
 
     if (res.data.isPremium) {
       setIsUserPremium(true);
@@ -27,7 +30,7 @@ const Premium = () => {
       { withCredentials: true }
     );
 
-    const { amount, keyId, currency, notes, orderId } = order.data;
+    const { amount, keyId, currency, notes, orderId } = order.data.data;
 
     const options = {
       key: keyId,
