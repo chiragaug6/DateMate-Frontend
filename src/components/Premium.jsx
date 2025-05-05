@@ -16,7 +16,7 @@ const Premium = () => {
     console.log("verifyPremiumUser res");
     console.log(res);
 
-    if (res.data.isPremium) {
+    if (res.data.data.isPremium) {
       setIsUserPremium(true);
     }
   };
@@ -67,7 +67,7 @@ const Premium = () => {
             <li> - 3 months</li>
           </ul>
           <button
-            onClick={() => handleBuyClick("gold")}
+            onClick={() => handleBuyClick("silver")}
             className="btn btn-secondary"
           >
             Buy Silver
