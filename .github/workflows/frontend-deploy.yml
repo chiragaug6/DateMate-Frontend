@@ -1,0 +1,61 @@
+name: Frontend CI/CD
+
+on:
+  push:
+    branches: [ main ]         # Trigger deployment on push to main
+  pull_request:
+    branches: [ main ]         # Run lint/build checks on PRs to main
+
+jobs:
+  lint-and-build:
+    name: Lint & Build
+    runs-on: ubuntu-latest     # GitHub runner environment
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 22       # Match EC2's Node.js version (v22.13.0)
+
+    - name: Install Dependencies
+      run: npm ci              # Clean install from package-lock.json
+
+    - name: Lint Code
+      run: npm run lint        # Run ESLint or your defined linter
+
+    - name: Build Frontend
+      run: npm run build       # Build the production frontend (outputs dist/)
+
+  deploy:
+    if: github.ref == 'refs/heads/main'  # Only deploy on main branch push
+    name: Deploy Frontend to EC2
+    needs: lint-and-build                # Wait for lint/build to pass
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 22
+
+    - name: Install Dependencies
+      run: npm ci
+
+    - name: Build Frontend
+      run: npm run build
+
+    - name: Save EC2 SSH Key
+      run: |
+        echo "${{ secrets.EC2_SSH_KEY }}" > key.pem
+        chmod 600 key.pem
+
+    - name: Upload dist/ to EC2 /var/www/html/
+      run: |
+        rsync -avz -e "ssh -o StrictHostKeyChecking=no -i key.pem" dist/ \
+          ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:${{ secrets.NGINX_HTML_DIR }}/
