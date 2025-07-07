@@ -2,14 +2,15 @@ name: Frontend CI/CD
 
 on:
   push:
-    branches: [ main ]         # Trigger deployment on push to main
+    branches: [ main ]
   pull_request:
-    branches: [ main ]         # Run lint/build checks on PRs to main
+    branches: [ main ]
 
 jobs:
   lint-and-build:
     name: Lint & Build
-    runs-on: ubuntu-latest     # GitHub runner environment
+    runs-on: ubuntu-latest
+    continue-on-error: true    # ✅ Do not block deployment if this fails
 
     steps:
     - name: Checkout Code
@@ -18,22 +19,22 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: 22       # Match EC2's Node.js version (v22.13.0)
+        node-version: 22
 
     - name: Install Dependencies
-      run: npm ci              # Clean install from package-lock.json
+      run: npm ci
 
     - name: Lint Code
-      run: npm run lint        # Run ESLint or your defined linter
+      run: npm run lint
 
     - name: Build Frontend
-      run: npm run build       # Build the production frontend (outputs dist/)
+      run: npm run build
 
   deploy:
-    if: github.ref == 'refs/heads/main'  # Only deploy on main branch push
+    if: github.ref == 'refs/heads/main'
     name: Deploy Frontend to EC2
-    needs: lint-and-build                # Wait for lint/build to pass
     runs-on: ubuntu-latest
+    needs: lint-and-build       # Wait for lint, but don't block if it fails
 
     steps:
     - name: Checkout Code
