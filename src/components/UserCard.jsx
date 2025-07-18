@@ -2,6 +2,7 @@ import axios from "axios";
 import { BASE_URL } from "../utils/constants";
 import { useDispatch } from "react-redux";
 import { removeUserFromFeed } from "../utils/feedSlice";
+import PropTypes from "prop-types";
 
 const UserCard = ({ user, isProfileRedirect }) => {
   const { _id, firstName, lastName, photoUrl, age, gender, about } = user;
@@ -9,19 +10,21 @@ const UserCard = ({ user, isProfileRedirect }) => {
 
   const handleSendRequest = async (status, userId) => {
     try {
-      const res = await axios.post(
+      await axios.post(
         BASE_URL + "/connection/send/" + status + "/" + userId,
         {},
         { withCredentials: true }
       );
       dispatch(removeUserFromFeed(userId));
-    } catch (err) {}
+    } catch (err) {
+      console.log("error",err)
+    }
   };
 
   return (
     <div className="card bg-base-300 w-96 shadow-xl">
       <figure>
-        <img src={user.photoUrl} alt="photo" />
+        <img src={photoUrl} alt="photo" />
       </figure>
       <div className="card-body">
         <h2 className="card-title">{firstName + " " + lastName}</h2>
@@ -49,4 +52,18 @@ const UserCard = ({ user, isProfileRedirect }) => {
     </div>
   );
 };
+
+UserCard.propTypes = {
+  user: PropTypes.shape({
+    _id: PropTypes.string.isRequired,
+    firstName: PropTypes.string.isRequired,
+    lastName: PropTypes.string.isRequired,
+    photoUrl: PropTypes.string,
+    age: PropTypes.number,
+    gender: PropTypes.string,
+    about: PropTypes.string,
+  }).isRequired,
+  isProfileRedirect: PropTypes.bool.isRequired,
+};
+
 export default UserCard;
